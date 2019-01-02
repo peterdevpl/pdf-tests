@@ -33,8 +33,8 @@ final class FeatureContext implements Context
      */
     public function thereIsADomesticInvoiceWithNumber(string $number): void
     {
-        $sender = new Company('Test Seller', 'PL1112223344', 'Grunwaldzka 1', '00-001', 'Warszawa');
-        $recipient = new Company('Test Recipient', 'PL5556667788', 'Prosta 1', '00-002', 'Kraków');
+        $sender = new Company('Test Sender', 'PL1112223344', 'Grunwaldzka 1', '00-000', 'Warszawa');
+        $recipient = new Company('Test Recipient', 'PL5556667788', 'Prosta 1', '00-000', 'Kraków');
         $issueDate = new \DateTimeImmutable();
         $dueDate = $issueDate->add(new \DateInterval('P14D'));
         $this->invoice = new Invoice($number, $sender, $recipient, $issueDate, $dueDate);
@@ -88,9 +88,52 @@ final class FeatureContext implements Context
     }
 
     /**
+     * @Then it should contain correct sender data with its name, VAT ID and address
+     */
+    public function itShouldContainCorrectSenderData(): void
+    {
+        $data = "Seller\n" . $this->getTextCompanyData($this->invoice->getSender());
+        Assert::assertContains($this->removeWhitespaces($data), $this->removeWhitespaces($this->plainText));
+    }
+
+    /**
+     * @Then it should contain correct recipient data with its name, VAT ID and address
+     */
+    public function itShouldContainCorrectRecipientData(): void
+    {
+        $data = "Buyer\n" . $this->getTextCompanyData($this->invoice->getRecipient());
+        Assert::assertContains($this->removeWhitespaces($data), $this->removeWhitespaces($this->plainText));
+    }
+
+    private function getTextCompanyData(Company $company): string
+    {
+        return $company->getName() . "\nVAT ID: " . $company->getVatId() . "\n" . $company->getStreet() . "\n" .
+            $company->getPostalCode() . ' ' . $company->getCity();
+    }
+
+    /**
+     * Sometimes a text dumped from a PDF file might contain additional whitespaces or different line ends.
+     * We're removing all whitespaces to make multiline comparison less error-prone.
+     */
+    private function removeWhitespaces(string $string): string
+    {
+        return \preg_replace('/\s+/m', '', $string);
+    }
+
+    /**
+     * @Then it should contain correct issue and due dates
+     */
+    public function itShouldContainCorrectIssueAndDueDates(): void
+    {
+        $pattern = '/Issue date\s+' . $this->invoice->getIssueDate()->format('Y\-m\-d') .
+            '\s+Due date\s+' . $this->invoice->getDueDate()->format('Y\-m\-d') . '/';
+        Assert::assertEquals(1, \preg_match($pattern, $this->plainText));
+    }
+
+    /**
      * @Then /the total net price should be (\d+\.\d+) ([A-Z]{3})/
      */
-    public function totalNetPriceShouldBe(string $price, string $currency)
+    public function totalNetPriceShouldBe(string $price, string $currency): void
     {
         Assert::assertContains('Total ' . $price, $this->plainText);
     }
@@ -98,7 +141,7 @@ final class FeatureContext implements Context
     /**
      * @Then /the VAT amount should be (\d+\.\d+) ([A-Z]{3})/
      */
-    public function vatAmountShouldBe(string $price, string $currency)
+    public function vatAmountShouldBe(string $price, string $currency): void
     {
         Assert::assertEquals(1, \preg_match('/Total \d+\.\d+ ' . \str_replace('.', '\\.', $price) . '/', $this->plainText));
     }
@@ -106,8 +149,17 @@ final class FeatureContext implements Context
     /**
      * @Then /the total gross price should be (\d+\.\d+) ([A-Z]{3})/
      */
-    public function totalGrossPriceShouldBe(string $price, string $currency)
+    public function totalGrossPriceShouldBe(string $price, string $currency): void
     {
         Assert::assertEquals(1, \preg_match('/Total \d+\.\d+ \d+\.\d+ ' . \str_replace('.', '\\.', $price) . '/', $this->plainText));
+    }
+
+    /**
+     * @Then the bank account number should be specified
+     */
+    public function theBankAccountNumberShouldBeSpecified(): void
+    {
+        $pattern = '/Account number\s+' . $this->invoice->getBankAccountNumber() . '/';
+        Assert::assertEquals(1, \preg_match($pattern, $this->plainText));
     }
 }
