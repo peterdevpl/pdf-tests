@@ -77,7 +77,7 @@ final class FeatureContext implements Context
         $this->plainText = $converter->textFromPdfFile($pdfPath);
 
         $pdfReader = new Pdf($pdfPath);
-        $this->metadata = $pdfReader->getData();
+        $this->metadata = (string) $pdfReader->getData();
 
         Assert::assertNotEmpty($this->plainText);
         Assert::assertContains('NumberOfPages: ' . $pagesCount, $this->metadata);
@@ -117,7 +117,7 @@ final class FeatureContext implements Context
      */
     private function removeWhitespaces(string $string): string
     {
-        return \preg_replace('/\s+/m', '', $string);
+        return (string) \preg_replace('/\s+/m', '', $string);
     }
 
     /**
