@@ -1,0 +1,18 @@
+{
+    "autoload": {
+        "psr-4": {"PeterDev\\Invoices\\": "src/"}
+    },
+    "require": {
+        "php": ">=7.2",
+        "moneyphp/money": "^3.2",
+        "twig/twig": "^2.6",
+        "lstrojny/functional-php": "^1.9"
+    },
+    "require-dev": {
+        "behat/behat": "^3.5",
+        "sgh/pdfbox": "^1.0",
+        "phpstan/phpstan": "^0.10.7",
+        "phpunit/phpunit": "^7.5",
+        "mikehaertl/php-pdftk": "^0.5.0"
+    }
+}

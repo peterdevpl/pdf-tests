@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: sans-serif;
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.issue-date {
+    text-align: right;
+    width: 100%;
+}
+
+.sender, .recipient {
+    width: 45%;
+}
+
+address {
+    font-style: normal;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+thead {
+    background: #E0E0E0;
+}
+
+th, td {
+    border: solid black 1px;
+    padding: 0.5rem;
+}
+
+.product-name {
+    width: 33%;
+}
+
+.number {
+    text-align: center;
+}
+
+tfoot th {
+    text-align: right;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-bottom: 1rem;
+}
+
+footer {
+    font-style: italic;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <dl class="issue-date"><dt>Issue date</dt><dd>2018-12-30</dd><dt>Due date</dt><dd>2019-01-15</dd></dl>
+    <section class="sender">
+        <h2>Seller</h2>
+        <address>Test Sender<br>VAT ID: PL1112223344<br>Grunwaldzka 1<br>00-000 Warszawa</address>
+    </section>
+    <section class="recipient">
+        <h2>Buyer</h2>
+        <address>Test Recipient<br>VAT ID: PL5556667788<br>Prosta 1<br>00-000 Kraków</address>
+    </section>
+</header>
+
+<main>
+    <h1>Invoice {{ number }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="product-name">Name</th>
+                <th>Quantity</th>
+                <th>Net amount</th>
+                <th>VAT rate</th>
+                <th>VAT amount</th>
+                <th>Gross amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td class="number">{{ item.quantity }}</td>
+                <td class="number">{{ item.netPrice }}</td>
+                <td class="number">{{ item.vatRate }}%</td>
+                <td class="number">{{ item.vatAmount }}</td>
+                <td class="number">{{ item.grossAmount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="2">Including</th>
+                <td class="number">100.00</td>
+                <td class="number">8%</td>
+                <td class="number">8.00</td>
+                <td class="number">108.00</td>
+            </tr>
+            <tr>
+                <th colspan="2"></th><td class="number">50.00</td><td class="number">23%</td><td class="number">11.50</td><td class="number">61.50</td>
+            </tr>
+            <tr>
+                <th colspan="2">Total</th>
+                <td class="number">{{ totalNetAmount }}</td>
+                <td></td>
+                <td class="number">{{ totalVatAmount }}</td>
+                <td class="number"><strong>{{ totalGrossAmount }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <dl class="payment-terms">
+        <dt>Payment method</dt><dd>Bank transfer</dd>
+        <dt>Account number</dt><dd>00 1111 2222 3333 4444 5555 6666</dd>
+    </dl>
+</main>
+
+<footer>
+Please state the invoice number while paying this invoice
+</footer>
+
+</body>
+</html>
