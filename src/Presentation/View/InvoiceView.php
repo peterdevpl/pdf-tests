@@ -28,6 +28,11 @@ final class InvoiceView implements ViewInterface
     {
         return [
             'number' => $this->invoice->getNumber(),
+            'sender' => $this->invoice->getSender(),
+            'recipient' => $this->invoice->getRecipient(),
+            'issueDate' => $this->invoice->getIssueDate()->format('Y-m-d'),
+            'dueDate' => $this->invoice->getDueDate()->format('Y-m-d'),
+            'bankAccountNumber' => $this->invoice->getBankAccountNumber(),
             'items' => $this->getItemsData(),
             'totalNetAmount' => $this->moneyFormatter->format($this->invoice->getTotalNetAmount()),
             'totalVatAmount' => $this->moneyFormatter->format($this->invoice->getTotalVatAmount()),

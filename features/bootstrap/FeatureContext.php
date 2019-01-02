@@ -2,19 +2,15 @@
 declare(strict_types=1);
 
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use mikehaertl\pdftk\Pdf;
 use Money\Currency;
 use Money\Money;
+use PeterDev\Invoices\Domain\Company;
 use PeterDev\Invoices\Domain\Invoice;
 use PeterDev\Invoices\Presentation\View\InvoiceViewRenderer;
 use PHPUnit\Framework\Assert;
 use SGH\PdfBox\PdfBox;
 
-/**
- * Defines application features from the specific context.
- */
 final class FeatureContext implements Context
 {
     /** @var Invoice */
@@ -35,7 +31,12 @@ final class FeatureContext implements Context
      */
     public function thereIsADomesticInvoiceWithNumber(string $number): void
     {
-        $this->invoice = new Invoice($number);
+        $sender = new Company('Test Seller', 'PL1112223344', 'Grunwaldzka 1', '00-001', 'Warszawa');
+        $recipient = new Company('Test Recipient', 'PL5556667788', 'Prosta 1', '00-002', 'Kraków');
+        $issueDate = new \DateTimeImmutable();
+        $dueDate = $issueDate->add(new \DateInterval('P14D'));
+        $this->invoice = new Invoice($number, $sender, $recipient, $issueDate, $dueDate);
+        $this->invoice->setBankAccountNumber('00 1111 2222 3333 4444 5555 6666');
     }
 
     /**

@@ -72,14 +72,29 @@ footer {
 <body>
 
 <header>
-    <dl class="issue-date"><dt>Issue date</dt><dd>2018-12-30</dd><dt>Due date</dt><dd>2019-01-15</dd></dl>
+    <dl class="issue-date">
+        <dt>Issue date</dt>
+        <dd>{{ issueDate }}</dd>
+        <dt>Due date</dt>
+        <dd>{{ dueDate }}</dd>
+    </dl>
     <section class="sender">
         <h2>Seller</h2>
-        <address>Test Sender<br>VAT ID: PL1112223344<br>Grunwaldzka 1<br>00-000 Warszawa</address>
+        <address>
+            {{ sender.getName() }}<br>
+            VAT ID: {{ sender.getVatId() }}<br>
+            {{ sender.getStreet() }}<br>
+            {{ sender.getPostalCode()~' '~sender.getCity() }}
+        </address>
     </section>
     <section class="recipient">
         <h2>Buyer</h2>
-        <address>Test Recipient<br>VAT ID: PL5556667788<br>Prosta 1<br>00-000 Kraków</address>
+        <address>
+            {{ recipient.getName() }}<br>
+            VAT ID: {{ recipient.getVatId() }}<br>
+            {{ recipient.getStreet() }}<br>
+            {{ recipient.getPostalCode()~' '~recipient.getCity() }}
+        </address>
     </section>
 </header>
 
@@ -111,16 +126,6 @@ footer {
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="2">Including</th>
-                <td class="number">100.00</td>
-                <td class="number">8%</td>
-                <td class="number">8.00</td>
-                <td class="number">108.00</td>
-            </tr>
-            <tr>
-                <th colspan="2"></th><td class="number">50.00</td><td class="number">23%</td><td class="number">11.50</td><td class="number">61.50</td>
-            </tr>
-            <tr>
                 <th colspan="2">Total</th>
                 <td class="number">{{ totalNetAmount }}</td>
                 <td></td>
@@ -132,7 +137,7 @@ footer {
 
     <dl class="payment-terms">
         <dt>Payment method</dt><dd>Bank transfer</dd>
-        <dt>Account number</dt><dd>00 1111 2222 3333 4444 5555 6666</dd>
+        <dt>Account number</dt><dd>{{ bankAccountNumber }}</dd>
     </dl>
 </main>
 

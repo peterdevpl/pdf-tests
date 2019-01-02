@@ -11,24 +11,72 @@ final class Invoice
     /** @var string */
     private $number;
 
+    /** @var \DateTimeImmutable */
     private $issueDate;
 
+    /** @var \DateTimeImmutable */
     private $dueDate;
 
+    /** @var Company */
     private $sender;
 
+    /** @var Company */
     private $recipient;
+
+    /** @var string */
+    private $bankAccountNumber = '';
 
     private $items = [];
 
-    public function __construct(string $number)
-    {
+    public function __construct(
+        string $number,
+        Company $sender,
+        Company $recipient,
+        \DateTimeImmutable $issueDate,
+        \DateTimeImmutable $dueDate
+    ) {
         $this->number = $number;
+        $this->sender = $sender;
+        $this->recipient = $recipient;
+        $this->issueDate = $issueDate;
+        $this->dueDate = $dueDate;
     }
 
     public function getNumber(): string
     {
         return $this->number;
+    }
+
+    public function getSender(): Company
+    {
+        return $this->sender;
+    }
+
+    public function getRecipient(): Company
+    {
+        return $this->recipient;
+    }
+
+    public function getIssueDate(): \DateTimeImmutable
+    {
+        return $this->issueDate;
+    }
+
+    public function getDueDate(): \DateTimeImmutable
+    {
+        return $this->dueDate;
+    }
+
+    public function getBankAccountNumber(): string
+    {
+        return $this->bankAccountNumber;
+    }
+
+    public function setBankAccountNumber(string $number): self
+    {
+        $this->bankAccountNumber = $number;
+
+        return $this;
     }
 
     public function addItem(string $name, int $quantity, Money $netPrice, int $vatRate): self
