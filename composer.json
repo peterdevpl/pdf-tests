@@ -1,6 +1,9 @@
 {
     "autoload": {
-        "psr-4": {"PeterDev\\Invoices\\": "src/"}
+        "psr-4": {
+            "PeterDev\\Invoices\\": "src/",
+            "Test\\PeterDev\\Invoices\\": "tests/"
+        }
     },
     "require": {
         "php": ">=7.2",

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Test\PeterDev\Invoices;
+
 use Behat\Behat\Context\Context;
 use mikehaertl\pdftk\Pdf;
 use Money\Currency;
@@ -68,10 +70,10 @@ final class FeatureContext implements Context
      */
     public function iShouldHaveAPDFFileWithPageIn(int $pagesCount, string $pageFormat, string $orientation): void
     {
-        $pdfPath = __DIR__ . '/../../invoice.html.pdf';
+        $pdfPath = __DIR__ . '/../invoice.html.pdf';
 
         $converter = new PdfBox();
-        $converter->setPathToPdfBox(__DIR__ . '/../../pdfbox-app.jar');
+        $converter->setPathToPdfBox(__DIR__ . '/../pdfbox-app.jar');
         $this->plainText = $converter->textFromPdfFile($pdfPath);
 
         $pdfReader = new Pdf($pdfPath);
