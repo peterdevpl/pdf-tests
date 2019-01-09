@@ -7,7 +7,7 @@ Feature: PDF rendition of an invoice
     Given there is a domestic invoice with number "123/2018"
     And it contains an item "First product" with 100.00 EUR net price and 8% VAT
     And it contains an item "Second product" with 50.00 EUR net price and 23% VAT
-    When I generate a PDF file for invoice "123/2018"
+    When I generate a PDF file for that invoice
     Then I should have a PDF file with 1 page in A4 portrait
     And it should contain correct sender data with its name, VAT ID and address
     And it should contain correct recipient data with its name, VAT ID and address

@@ -7,6 +7,7 @@
     },
     "require": {
         "php": ">=7.2",
+        "guzzlehttp/guzzle": "^6.3",
         "moneyphp/money": "^3.2",
         "twig/twig": "^2.6",
         "lstrojny/functional-php": "^1.9"

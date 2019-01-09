@@ -9,7 +9,7 @@ use Money\Currency;
 use Money\Money;
 use PeterDev\Invoices\Domain\Company;
 use PeterDev\Invoices\Domain\Invoice;
-use PeterDev\Invoices\Presentation\View\InvoiceViewRenderer;
+use PeterDev\Invoices\Presentation\InvoicePdfRenderer;
 use PHPUnit\Framework\Assert;
 use SGH\PdfBox\PdfBox;
 
@@ -17,6 +17,9 @@ final class FeatureContext implements Context
 {
     /** @var Invoice */
     private $invoice;
+
+    /** @var string */
+    private $pdf;
 
     /** @var string */
     private $plainText;
@@ -55,14 +58,12 @@ final class FeatureContext implements Context
     }
 
     /**
-     * @When I generate a PDF file for invoice :number
+     * @When I generate a PDF file for that invoice
      */
-    public function iGenerateAPDFFileForInvoice(string $number): void
+    public function iGenerateAPDFFileThatInvoice(): void
     {
-        $renderer = new InvoiceViewRenderer();
-        $html = $renderer->render($this->invoice);
-
-        /* TODO: launch Chrome in headless mode to render the PDF file */
+        $renderer = new InvoicePdfRenderer();
+        $this->pdf = $renderer->render($this->invoice);
     }
 
     /**
@@ -70,13 +71,11 @@ final class FeatureContext implements Context
      */
     public function iShouldHaveAPDFFileWithPageIn(int $pagesCount, string $pageFormat, string $orientation): void
     {
-        $pdfPath = __DIR__ . '/../invoice.html.pdf';
-
         $converter = new PdfBox();
         $converter->setPathToPdfBox(__DIR__ . '/../pdfbox-app.jar');
-        $this->plainText = $converter->textFromPdfFile($pdfPath);
+        $this->plainText = $converter->textFromPdfStream($this->pdf);
 
-        $pdfReader = new Pdf($pdfPath);
+        $pdfReader = new Pdf($this->pdf);
         $this->metadata = (string) $pdfReader->getData();
 
         Assert::assertNotEmpty($this->plainText);
