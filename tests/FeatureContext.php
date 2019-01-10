@@ -73,7 +73,12 @@ final class FeatureContext implements Context
         \file_put_contents($temporary, $this->pdf);
 
         $pdfToTextConverter = new Pdf();
-        $pdfToTextConverter->setPdf($temporary);
+        $pdfToTextConverter
+            ->setPdf($temporary)
+            ->setOptions([
+                '-eol unix',
+                '-raw',
+            ]);
         $this->plainText = $pdfToTextConverter->text();
 
         Config::setBinDirectory('/usr/bin/');
@@ -95,7 +100,7 @@ final class FeatureContext implements Context
     public function itShouldContainCorrectSenderData(): void
     {
         $data = "Seller\n" . $this->getTextCompanyData($this->invoice->getSender());
-        Assert::assertContains($this->removeWhitespaces($data), $this->removeWhitespaces($this->plainText));
+        Assert::assertContains($data, $this->plainText);
     }
 
     /**
@@ -104,22 +109,13 @@ final class FeatureContext implements Context
     public function itShouldContainCorrectRecipientData(): void
     {
         $data = "Buyer\n" . $this->getTextCompanyData($this->invoice->getRecipient());
-        Assert::assertContains($this->removeWhitespaces($data), $this->removeWhitespaces($this->plainText));
+        Assert::assertContains($data, $this->plainText);
     }
 
     private function getTextCompanyData(Company $company): string
     {
         return $company->getName() . "\nVAT ID: " . $company->getVatId() . "\n" . $company->getStreet() . "\n" .
             $company->getPostalCode() . ' ' . $company->getCity();
-    }
-
-    /**
-     * Sometimes a text dumped from a PDF file might contain additional whitespaces or different line ends.
-     * We're removing all whitespaces to make multiline comparison less error-prone.
-     */
-    private function removeWhitespaces(string $string): string
-    {
-        return (string) \preg_replace('/\s+/m', '', $string);
     }
 
     /**
