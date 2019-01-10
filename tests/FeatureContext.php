@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace Test\PeterDev\Invoices;
 
 use Behat\Behat\Context\Context;
-use mikehaertl\pdftk\Pdf;
 use Money\Currency;
 use Money\Money;
+use NcJoes\PopplerPhp\Config;
+use NcJoes\PopplerPhp\PdfInfo;
 use PeterDev\Invoices\Domain\Company;
 use PeterDev\Invoices\Domain\Invoice;
 use PeterDev\Invoices\Presentation\InvoicePdfRenderer;
 use PHPUnit\Framework\Assert;
-use SGH\PdfBox\PdfBox;
+use Spatie\PdfToText\Pdf;
 
 final class FeatureContext implements Context
 {
@@ -24,11 +25,8 @@ final class FeatureContext implements Context
     /** @var string */
     private $plainText;
 
-    /** @var string */
-    private $metadata;
-
     private $pageDimensions = [
-        'A4' => ['portrait' => '594.96 841.92', 'landscape' => '841.92 594.96'],
+        'A4' => ['portrait' => '594.96 x 841.92 pts (A4)', 'landscape' => '841.92 x 594.96 pts (A4)'],
     ];
 
     /**
@@ -60,7 +58,7 @@ final class FeatureContext implements Context
     /**
      * @When I generate a PDF file for that invoice
      */
-    public function iGenerateAPDFFileThatInvoice(): void
+    public function iGenerateAPDFFileForThatInvoice(): void
     {
         $renderer = new InvoicePdfRenderer();
         $this->pdf = $renderer->render($this->invoice);
@@ -71,19 +69,24 @@ final class FeatureContext implements Context
      */
     public function iShouldHaveAPDFFileWithPageIn(int $pagesCount, string $pageFormat, string $orientation): void
     {
-        $converter = new PdfBox();
-        $converter->setPathToPdfBox(__DIR__ . '/../pdfbox-app.jar');
-        $this->plainText = $converter->textFromPdfStream($this->pdf);
+        $temporary = \tempnam(\sys_get_temp_dir(), 'pdf');
+        \file_put_contents($temporary, $this->pdf);
 
-        $pdfReader = new Pdf($this->pdf);
-        $this->metadata = (string) $pdfReader->getData();
+        $pdfToTextConverter = new Pdf();
+        $pdfToTextConverter->setPdf($temporary);
+        $this->plainText = $pdfToTextConverter->text();
+
+        Config::setBinDirectory('/usr/bin/');
+        $pdfInfo = new PdfInfo($temporary);
 
         Assert::assertNotEmpty($this->plainText);
-        Assert::assertContains('NumberOfPages: ' . $pagesCount, $this->metadata);
-        Assert::assertContains(
-            'PageMediaDimensions: ' . $this->pageDimensions[$pageFormat][$orientation],
-            $this->metadata
+        Assert::assertEquals($pagesCount, $pdfInfo->getNumOfPages());
+        Assert::assertEquals(
+            $this->pageDimensions[$pageFormat][$orientation],
+            $pdfInfo->getPageSize()
         );
+
+        \unlink($temporary);
     }
 
     /**
